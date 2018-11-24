@@ -1,4 +1,5 @@
 library(tidyverse)
+library(jsonlite)
 
 #From Chad:
 #All the data will be uploaded here: 
@@ -28,4 +29,23 @@ mspflow <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/
 mspflow2 <- mspflow %>% filter(gender=="Total", age=="Total", race=="Total", education=="Total")
 unique(mspflow2$occ_a)
 length(unique(mspflow2$occ_b))
-94*94
+
+
+#to json
+#data questions: any differences b/n occa/titlea and b?
+#redo so that start occs is a single array of data -- avoid repeating wage data 95 times for each occ -- not sure if kosher
+dict <- mspflow %>% select(occ_a, titlea) %>% 
+          as.data.frame %>% unique() %>% 
+          filter(!duplicated(occ_a)) %>% 
+          spread(occ_a, titlea)
+
+dat <- mspflow2 %>% select(occ_a, occ_b, sw=p_a_wage, ew=f_a_wage, opp=opportunity, oth=other) %>% as.data.frame() %>% split(.$occ_a)
+
+sum_probs <- mspflow2 %>% group_by(occ_a, titlea) %>% summarise(share=sum(probs))
+
+json <- toJSON(dat, na="null", digits=5, pretty=TRUE)
+
+writeLines(json, con="/home/alec/Projects/Brookings/opportunity-industries/data/msp.json")
+
+writeLines(c("var start_occs = ", toJSON(dict, pretty=TRUE), ";", "export default start_occs;",""), 
+           con="/home/alec/Projects/Brookings/opportunity-industries/build/js/start-occs.js")
