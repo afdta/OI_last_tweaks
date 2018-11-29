@@ -23,12 +23,34 @@ dir_download <- "https://app.box.com/v/BMPPOI-MetroJobShares"
 #opportunity - Share of employed in starting occ that will hold a good job when they reach the ending occ
 #other – Share of employed in starting occ that do not have and will not have a good job at start or end of pathway
 #weight – Raw person weight (number of employed in that starting occ meeting personal descriptors as implied by ACS data) – ignore this
-  
+
+occs <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/metro_job_quality/met_opptyocc2017j.csv") %>% 
+        filter(level==3) %>% mutate(occ=substr(sub("-","",soc_code), 1, 3))
+
+occs2 <- occs %>% group_by(cbsa_code, CBSA_Title) %>% mutate(shtot=total/sum(total))
+
+#msp specific data file -- rough, need to rework code with final data
 mspflow <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/flat_files/33460 Minneapolis MN-WI 3digit flows.csv")
 
 mspflow2 <- mspflow %>% filter(gender=="Total", age=="Total", race=="Total", education=="Total")
-unique(mspflow2$occ_a)
-length(unique(mspflow2$occ_b))
+
+wage_levels_a <- mspflow2 %>% group_by(occ_a, titlea) %>% summarise(swage=mean(p_a_wage)) %>% mutate(occ=sub("a","", occ_a))
+wage_levels_b <- mspflow2 %>% group_by(occ_b, titleb) %>% summarise(ewage=mean(f_a_wage)) %>% mutate(occ=sub("b","", occ_b))
+
+wage_levels <- full_join(wage_levels_a, wage_levels_b) %>% ungroup() %>% select(occ, title=titlea, swage, ewage)
+
+mspoccs <- occs2 %>% filter(cbsa_code==33460) %>% ungroup() %>% 
+                     select("occ", "occupation", "shtot", "total", "good_share","promising_share",
+                            "hi_good_share", "hi_promising_share", "other_share", "undefined")
+
+
+msp_summary <- full_join(mspoccs, wage_levels)
+mspflow3 <- mspflow2 %>% select(occ_a, occ_b, opportunity, other)
+
+json <- toJSON(list(summary=msp_summary, flows=mspflow3), na="null", digits=5, pretty=TRUE)
+writeLines(json, con="/home/alec/Projects/Brookings/opportunity-industries/data/msp.json")
+
+##old
 
 
 #to json
@@ -41,7 +63,7 @@ dict <- mspflow %>% select(occ_a, titlea) %>%
 
 dat <- mspflow2 %>% select(occ_a, occ_b, sw=p_a_wage, ew=f_a_wage, opp=opportunity, oth=other) %>% as.data.frame() %>% split(.$occ_a)
 
-sum_probs <- mspflow2 %>% group_by(occ_a, titlea) %>% summarise(share=sum(probs))
+sum_probs <- mspflow2 %>% group_by(occ_a, titlea) %>% summarise(share=sum(probs), min=min(p_a_wage), max=max(p_a_wage)) %>% mutate(diff=max-min)
 
 json <- toJSON(dat, na="null", digits=5, pretty=TRUE)
 

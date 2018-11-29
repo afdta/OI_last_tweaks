@@ -1,3 +1,400 @@
 .metro-interactive svg line{
     shape-rendering:crispEdges;
 }
+
+.metro-interactive .c-fix:after{
+    display:table;
+    content:"";
+    clear:both;
+}
+
+.metro-interactive div{
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.metro-interactive .mi-rm{
+    display:none;
+}
+
+.metro-interactive svg{
+    overflow:visible;
+}
+
+.metro-interactive .mi-section-panel{
+    background-color:#e0e0e0;
+    margin:64px auto;
+    padding:32px 0px;
+}
+
+.metro-interactive .mi-section-panel-tag{
+    margin:64px auto 0px auto !important;
+}
+
+.metro-interactive .mi-section-panel-tag *{
+    color:#ffffff;
+    font-weight:bold;
+    display:inline-block;
+    background-color:#762b46;
+    padding:8px 15px;
+    margin:0px 0px;
+}
+
+.metro-interactive .mi-center-col{
+    max-width:1400px;
+    margin:15px auto;
+    padding:0px 15px;
+}
+
+.metro-interactive-sidebar{
+    background-color:#e0e0e0;
+    max-width:1100px;
+    margin:1rem auto;
+    padding:15px 32px;
+}
+
+.metro-interactive-sidebar *{
+    font-family: franklin-gothic-urw-cond, helvetica, sans-serif;
+    margin:0em auto 1em auto;
+}
+
+.metro-interactive .mi-reading{
+    max-width:860px;
+}
+
+.metro-interactive .mi-reading *{
+    line-height:1.7em;
+}
+
+.metro-interactive .mi-notes{
+    position:relative;
+    margin-top:48px;
+}
+
+.metro-interactive .mi-notes:before{
+    content:"";
+    position:absolute;
+    height:1px;
+    width:20%;
+    border-top:1px solid #ffffff;
+    top:-16px;
+    left:15px;
+}
+
+.metro-interactive .mi-notes *{
+    line-height:1.5em;
+    font-size:0.9em;
+    font-style:italic;
+    color:#666666;
+}
+
+
+.metro-interactive .mi-mobile-view{
+    display:block;
+}
+
+.metro-interactive p, 
+.metro-interactive text,
+.metro-interactive li, 
+.metro-interactive h1, 
+.metro-interactive h2, 
+.metro-interactive h3, 
+.metro-interactive h4,
+.metro-interactive td{
+    font-family: 'PT Serif', serif;
+    color:#333333;
+    fill:#333333;
+    margin:0em 0em 16px 0em;
+    line-height:1.4em;
+}
+
+.metro-interactive p, 
+.metro-interactive text,
+.metro-interactive li, 
+.metro-interactive td{
+    font-size: 16px;
+}
+
+.metro-interactive p.mi-title1{
+    font-size:42px;
+    font-weight:bold;
+}
+
+.metro-interactive p.mi-title2{
+    font-size:32px;
+    font-weight:bold;
+}
+
+.metro-interactive p.mi-title3{
+    font-size:22px;
+    font-weight:bold;
+}
+
+/*select*/
+.metro-interactive select{
+    font-size:16px;
+    font-family: 'PT Serif', serif;
+}
+
+.metro-interactive .select-wrap{   
+    margin:15px 10px 0px 0px;
+    padding-right:0px;
+    position:relative;  
+    float:left;  
+}
+
+.metro-interactive .select-wrap:before{
+    content:"";
+    position:absolute;
+    top: 0px;
+    left:0px;
+    width:100%;
+    top:0px;
+    height: 100%;
+    box-shadow: 2px 2px 9px rgba(0,0,0,0.4);
+    border:1px solid #aaaaaa;
+    border-radius:0px;
+    box-sizing:border-box;
+    pointer-events:none;
+}
+
+.metro-interactive .select-wrap:hover:before{
+    box-shadow: 2px 4px 9px rgba(0,0,0,0.4);
+    transform:translateY(-1px);
+}
+
+.metro-interactive select{
+    background:none;
+    outline:none;
+    border:none;
+    padding:6px 29px 6px 10px;
+    top:1px;
+    position:relative;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance:none;
+    width:100%;
+}
+
+.metro-interactive .select-wrap:hover select{
+    top:0px;
+}
+
+.metro-interactive .legend-swatch{
+    float:left;
+    margin:0px 10px 10px 0px;;
+}
+
+.metro-interactive .legend-swatch > *{
+    display:inline-block;
+    line-height:1em;
+    margin:0px 5px 0px 0px;
+    vertical-align:top;
+    font-size:0.9em;
+}
+
+.metro-interactive .legend-swatch > div{
+    width:0.9em;
+    height:0.9em;
+    border:0px solid #dddddd;
+    border-radius:0.45em;
+}
+
+
+.metro-interactive .mi-summary-card{
+    padding:0px 0px 5px 0px;
+    margin:0px 0px 15px 0px;
+    border:1px solid #aaaaaa;
+    border-width:0px 0px 1px 0px;
+
+}
+
+.metro-interactive .mi-summary-card-title{
+    font-weight:bold;
+    margin:0px 0px 5px 0px;
+}
+.metro-interactive .mi-summary-card-value{
+    font-weight:bold;
+    margin:0px 0px 5px 0px;
+}
+.metro-interactive .mi-summary-card-footer{
+    font-style:italic;
+}
+
+.metro-interactive .three-inputs-module > *,
+.metro-interactive .three-inputs-module-cell{
+    width:30%;
+    margin-right:3%;
+    padding:15px;
+    display:inline-block;
+    vertical-align:bottom;
+    border:2px solid #ff96bc;
+    background-color:#eeeeee;
+    border-radius:15px;
+    text-align:left;
+}
+
+/*defining devaluation*/
+.metro-interactive .defining-devaluation{
+    max-width:1100px;
+    margin:0rem auto;
+    background-color:#ffffff;
+    border-radius:0px;
+    padding:20px 32px 20px 32px;
+}
+
+.metro-interactive .defining-devaluation strong{
+    color:#a92760;
+}
+
+
+/*end defining devaluation*/
+
+@media (min-width: 0px){
+    .metro-interactive .mi-split > div{
+        width:auto;
+        float:none;
+        background:#ffffff;
+        border-radius:5px;
+        padding:20px 20px;
+        margin-bottom:20px;
+    }
+
+    .metro-interactive p.mi-title1{font-size:30px;}
+    .metro-interactive p.mi-title2{font-size:24px;}
+    .metro-interactive p.mi-title3{font-size:16px;}
+
+    .metro-interactive .mi-desktop-view{display:none}
+
+    .metro-interactive .grid-container{
+        display: block;
+    }
+
+    .metro-interactive .grid-container > div{
+        border: 1px solid #aaaaaa;
+        padding: 10px 15px;
+        background-color: #ffffff;
+        border-radius: 0px;
+        border-width:1px 0px 0px 0px;
+        position:relative;
+    }
+
+    .metro-interactive .defining-devaluation .as-table{
+        display:block;
+    }
+    
+    .metro-interactive .defining-devaluation .as-table > div{
+        display:block;
+    }
+    
+    .metro-interactive .defining-devaluation .as-table > div > div{
+        display:block;
+        border:1px solid #aaaaaa;
+        border-width:1px 0px 0px 0px;
+        padding:10px 0px;
+
+    }
+
+    .metro-interactive .defining-devaluation .actual-definition{
+        padding:10px 0px;
+        border:1px solid #aaaaaa;
+        border-width:1px 0px 0px 0px;
+    }
+}
+
+@media (min-width: 800px){
+    .metro-interactive .mi-split > div{
+        float:left;
+        width:73%;
+        margin-left:2%;
+        padding:20px 20px;
+        border-left:1px solid #ffffff;
+    }
+    
+    .metro-interactive .mi-split > div:first-child{
+        width:25%;
+        margin:0px;
+        padding:20px 20px;
+        border:none;
+    }
+
+    .metro-interactive p.mi-title1{font-size:38px;}
+    .metro-interactive p.mi-title2{font-size:28px;}
+    .metro-interactive p.mi-title3{font-size:18px;}
+
+    .metro-interactive .mi-desktop-view{display:block}
+
+    .metro-interactive .grid-container{
+        display: grid;
+        grid-template-columns: 31.3% 31.3% 31.3%;
+        grid-template-rows: auto auto;
+        grid-auto-flow: row;
+        grid-column-gap: 2%;
+        grid-row-gap: 15px;
+        width:100%;
+        margin:24px auto;
+    }
+
+    .metro-interactive .grid-container > div{
+        border: 1px solid #aaaaaa;
+        padding: 10px 15px;
+        background-color: #ffffff;
+        border-radius: 0px;
+        border-width:1px 0px 0px 1px;
+        position:relative;
+    }
+
+    .metro-interactive .defining-devaluation .mi-title1{
+        margin-left:20px;
+    }
+
+    .metro-interactive .defining-devaluation .as-table{
+        display:table;
+        border-spacing:20px;
+        border:1px solid #aaaaaa;
+        border-width:0px 0px 0px 0px;
+    }
+    
+    .metro-interactive .defining-devaluation .as-table > div{
+        display:table-row;
+    }
+    
+    .metro-interactive .defining-devaluation .as-table > div > div{
+        display:table-cell;
+        vertical-align:top;
+        padding:20px 20px 0px 20px;
+        border:1px solid #aaaaaa;
+        border-width:1px 0px 0px 1px;
+    }    
+
+    .metro-interactive .defining-devaluation .actual-definition{
+        margin:0px 0px;
+        padding:0px 20px 20px 20px;
+        border:1px solid #aaaaaa;
+        border-width:0px 0px 0px 0px;
+    }
+    
+    .metro-interactive .defining-devaluation .actual-definition > div{
+        padding:20px 20px;
+        border:1px solid #aaaaaa;
+        border-width:1px 0px 0px 1px;
+        max-width:none;
+    }
+
+    .metro-interactive-sidebar{
+        padding:15px 32px;
+    }
+
+}
+
+
+@media (min-width:1000px){
+    .metro-interactive .mi-mobile-view{
+        display:none;
+    }
+
+    .metro-interactive p.mi-title1{font-size:42px;}
+    .metro-interactive p.mi-title2{font-size:32px;}
+    .metro-interactive p.mi-title3{font-size:22px;}
+}

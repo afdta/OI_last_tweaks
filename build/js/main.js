@@ -23,7 +23,7 @@ function main(){
 
   var scope = {
     cbsa: "cbsa_code_here",
-    width: 1400
+    width: 900
   }
 
 
