@@ -11,22 +11,48 @@ export default function metros_chart(container, scope){
     });
 
     var header = wrap.append("div").classed("c-fix",true).style("margin","0px 0px 15px 0px");
-
     var title = header.append("p").classed("mi-title2",true);
 
-    //chart wrap
-    var small_multiples_wrap = wrap.append("div").style("border-top","0px solid #aaaaaa").style("margin","0px 0px").style("padding","0px 0px");
-    small_multiples_wrap.append("p").html("Option 1: same as industry chart above OR Option 2: small multiples (below); could stack bars to save space, or just stack good + promising + hi? <br/>Drop 'Other'?")
-    small_multiples_wrap.append("p").html('Percentage of jobs in each metro area that are ' +
-                                     '<span class="key-swatch good-jobs">good jobs</span>, ' + 
-                                     '<span class="key-swatch promising-jobs">promising jobs</span>, ' +
-                                     '<span class="key-swatch hi-jobs">high-skill jobs</span>, '+
-                                     'or <span class="key-swatch other-jobs">other jobs</span>')
-                                     .style("font-weight","bold").style("line-height","1.7em");
 
-    var small_multiples = small_multiples_wrap.append("div").classed("small-multiples",true);
+    var metros_data = cbsas.map(function(cbsa){
+        var obs = industry_data[cbsa.code].filter(function(d){return d.naics===null});
+        return obs[0];
+    })
 
+    //metros_data.sort(function(a,b){return d3.descending(a.obs.g+a.obs.p, b.obs.g+b.obs.p)})
 
+    var segment_labels = {g:"Good", p:"Promising", hi:"High-skilled", o:"Other"}
+    var segment_fill = {g:"#394d9c", p:"#52d0a8", hi:"#ffa200", o:"#777777"}
+
+    var wraps = wrap.selectAll("div.metro-bar-wrap").data(["g","p","hi","o"]).enter().append("div").classed("metro-bar-wrap",true).style("width","100%");
+    var titles = wraps.append("p").classed("mi-title3",true).text(function(d){return segment_labels[d]});
+    var svgs = wraps.append("svg").attr("height","200px").attr("width","100%");
+
+    svgs.each(function(cat,i){
+        var data = metros_data.sort(function(a,b){return d3.descending(a[cat], b[cat])})
+        var svg = d3.select(this);
+        var x = d3.scaleLinear().domain([0,99]).range([0,99]);
+        var y = d3.scaleLinear().domain([0,d3.max(data, function(d){return d[cat]})]).range([100,10]);
+        var height = function(v){return 100 - y(v)}
+        
+        var bars = svg.selectAll("rect").data(data).enter().append("rect")
+                    .attr("x", function(d,i){return i + "%"})
+                    .attr("y", function(d,i){return y(d[cat])})
+                    .attr("width","1%")
+                    .attr("height", function(d,i){return height(d[cat])})
+                    .attr("stroke","#ffffff")
+                    .attr("fill", segment_fill[cat])
+                    .style("shape-rendering","crispEdges")
+                    ;
+    })
+
+    console.log(metros_data);
+
+    function update(cbsa){
+
+    }
+
+    return update;
 
     var x = d3.scaleLinear().domain([0,1]).range([0,100]);
 
@@ -39,8 +65,7 @@ export default function metros_chart(container, scope){
         }
     }
 
-    var segment_labels = {g:"Good", p:"Promising", hi:"High-skilled", o:"Other"}
-    var segment_fill = {g:"#394d9c", p:"#52d0a8", hi:"#ffa200", o:"#777777"}
+
 
     function layout(g, cbsa){
         var s = ["g", "p", "hi", "o"];

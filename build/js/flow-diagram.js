@@ -6,87 +6,71 @@ import {occ_flows, occ_shares, occ_names} from "./occupation-data.js";
 
 export default function flow_diagram(container){
     //one time setup
-    var wrap = d3.select(container).style("overflow","visible");
+    var wrap = d3.select(container).style("overflow","visible").style("min-width","480px");
 
-    var bar_height = 10;
+    var bar_height = 15;
     var text_height = 17;
-    var bar_pad = 30;
+    var top_pad = 50;
+    var bar_pad = 5;                 
 
-    var header = wrap.append("div").style("display","table").style("width","100%")
-                     
+    var fill = {opp:"#52d0a8", hi:"#ffa200", oth:"#aaaaaa"}    
 
-    var headers1 = header.append("div").style("display","table-row")
-                        .selectAll("div").data([0,1,2]).enter().append("div")
-                        .style("display","table-cell")
-                        .style("vertical-align","top")
-                        .style("width","33%").style("padding-right","48px");
-    var headers2 = header.append("div").style("display","table-row")
-                        .selectAll("div").data([0,1,2]).enter().append("div")
-                        .style("display","table-cell")
-                        .style("vertical-align","bottom")
-                        .style("width","33%").style("padding-right","48px");
-
-    headers1.each(function(d,i){
-        var thiz = d3.select(this);
-        if(i==0){
-            thiz.html('<p><em>Different occupations provide different levels of opportunity</em></p>')
-        }
-        else if(i==1){
-            thiz.html('<p><em>Workers switch occupations a lot, and which occupation they switch to affects their likelihood of landing a good job</em></p>')
-        }
-        else if(i==2){
-            thiz.html('<p><em>Click on an occupation to see which occupations job-holders switched to, or what portion stayed in the same occupation.</p>')
-        }
-    })
-
-    headers2.each(function(d,i){
-        var thiz = d3.select(this);
-        if(i==0){
-            thiz.html('<p style="margin:0px;font-size:14px;font-weight:bold;"><span class="key-swatch promising-jobs">Good and promising jobs</span><br /><br />Share of all metro area jobs</p>')
-        }
-        else if(i==1){
-            thiz.html('<p style="margin:0px;font-size:14px;font-weight:bold;"><span class="key-swatch hi-jobs">Portion who switched from this occupation over a 10-year period</span><br /><br/>Share of all metro area jobs</p>')
-        }
-        else if(i==2){
-            thiz.html('<p style="margin:0px;font-size:14px;font-weight:bold;">Share of jobs from selected occupation</p>')
-        }
-    })
-
-    var svg = wrap.append("svg").attr("width","100%").attr("height",((bar_height+bar_pad)*22)+bar_pad);
-
-    var zero_left = 0;
-    var zero_middle = 33;
-    var zero_right = 66;
-    var pct_width = 25;
-
-    var g_left = svg.append("g");
-    var g_left_anno = g_left.append("g");
-    var g_left_axis = g_left_anno.append("line").attr("y1",30).attr("y2",30)
-                                                .attr("x1",zero_left+"%").attr("x2",(zero_left+pct_width)+"%")
-                                                .attr("stroke","#aaaaaa");
+    var header_panels = wrap.append("div").classed("c-fix",true);
+    var panels = wrap.append("div").classed("c-fix",true);
     
-    var g_middle = svg.append("g");
-    var g_middle_anno = g_middle.append("g");
-    var g_middle_axis = g_middle_anno.append("line").attr("y1",30).attr("y2",30)
-                                        .attr("x1",zero_middle+"%").attr("x2",(zero_middle+pct_width)+"%")
-                                        .attr("stroke","#aaaaaa");
+    var left_panel = panels.append("div").style("width","50%").style("float","left").style("padding","0px 20px").append("div");
+    var right_panel = panels.append("div").style("width","50%").style("float","left").style("padding","0px 20px").append("div");
 
-    var g_right = svg.append("g");//.style("visibility","hidden").style("opacity","0");
-    var g_right_anno = g_right.append("g");
-    var g_right_axis = g_right_anno.append("line").attr("y1",30).attr("y2",30)
-                                    .attr("x1",zero_right+"%").attr("x2",(zero_right+pct_width)+"%")
-                                    .attr("stroke","#aaaaaa");
+    var left_header = header_panels.append("div").style("width","50%").style("float","left").style("padding","0px 20px").append("div");
+    var right_header = header_panels.append("div").style("width","50%").style("float","left").style("padding","0px 20px").append("div");
+
+    left_header.append("p").classed("mi-title3",true).text("Share of all metro area jobs")
+    left_header.append("p").html('<span style="margin-right:12px;" class="key-swatch promising-jobs">Good and promising jobs</span>' + 
+                                 '<span class="key-swatch other-jobs">All other jobs</span>');
+
+    var right_header_title = right_header.append("p").classed("mi-title3",true).text("").style("visibility","hidden");
+
+    var svg_height = ((bar_height+bar_pad)*22)+(top_pad*2);
+    var svg = left_panel.append("svg").attr("width","100%").attr("height", svg_height);
+    var g = svg.append("g");
+    var g_anno = svg.append("g");
+    var g_axis = svg.append("g").attr("transform","translate(0,40)");
+    
+    var g_axis_label = g_axis.append("text").attr("y",-25).attr("x","0%").text("Share of all metro area jobs");
+    var g_axis_line = g_axis.append("line").attr("y1",0.5).attr("y2",0.5)
+                        .attr("x1","0%").attr("x2",(100)+"%")
+                        .attr("stroke","#aaaaaa");
+
+
+    var call_to_action = right_panel.append("div").style("margin","0px 32px").style("border-radius","15px").style("background-color","#dddddd")
+                            .style("padding","64px 32px").style("height", (svg_height-top_pad)+"px");
+    call_to_action.append("p").style("max-width","250px").style("margin","0px auto").html("<strong>Click or tap on one of the bars to see which occupations those job-holders switched to.</strong>")
+
+
+    var svg_right = right_panel.append("svg").attr("width","100%").attr("height",svg_height).style("display","none");
+    var g_right = svg_right.append("g");
+    var g_right_anno = svg_right.append("g");
+    var g_right_axis = svg_right.append("g").attr("transform","translate(0,40)");
+    
+    var g_right_axis_label = g_right_axis.append("text").attr("y",-25).attr("x","0%").text("Share of selected occupation");
+    var g_right_axis_line = g_right_axis.append("line").attr("y1",0.5).attr("y2",0.5)
+                        .attr("x1","0%").attr("x2",(100)+"%")
+                        .attr("stroke","#aaaaaa");
+
 
     var sub_ba = false;
 
+    function add_ticks(g, scale, num){
+        if(num == null){
+            num = 4;
+        }
 
-    function add_ticks(g, scale){
-        var ticks = scale.ticks(4);
+        var ticks = scale.ticks(num);
 
         var lines = g.selectAll("line.tick-mark").data(ticks);
         lines.exit().remove();
         lines.enter().append("line").classed("tick-mark",true).style("opacity","0").merge(lines)
-            .attr("y1", 25).attr("y2", 30)
+            .attr("y1", -5).attr("y2", 0.5)
             .attr("stroke","#aaaaaa")
             .transition().duration(1200)
             .attr("x1", function(d){return scale(d)+"%"})
@@ -97,7 +81,7 @@ export default function flow_diagram(container){
         var text = g.selectAll("text.tick-mark").data(ticks);
         text.exit().remove();
         text.enter().append("text").classed("tick-mark",true).style("opacity","0").merge(text)
-            .attr("y", 23)
+            .attr("y", -7)
             .text(function(d){return (d*100) + "%"})
             .style("font-size","14px")
             .attr("dx","0")
@@ -108,26 +92,45 @@ export default function flow_diagram(container){
             ;
     }
 
-
-
-    //var x_left = d3.scaleLinear().domain([0, 1]).range([zero_left, zero_left-pct_width]).nice();
-    var x_left = d3.scaleLinear().domain([0, 1]).range([zero_left, zero_left+pct_width]).nice();
-    var x_middle = d3.scaleLinear().domain([0, 1]).range([zero_middle, zero_middle+pct_width]).nice();
-    var x_right = d3.scaleLinear().domain([0, 0.25]).range([zero_right, zero_right+pct_width]).nice();
-
-    //TO DO: update x_right and ticks based on data!!!
-
-    add_ticks(g_right_anno, x_right);
-
-    //var width_left = function(v){return zero_left - x_left(v);}
-    var width_left = function(v){return x_left(v) - zero_left;}
-    var width_middle = function(v){return x_middle(v) - zero_middle;}
-    var width_right = function(v){return x_right(v) - zero_right;}
-
-    var left_fill = {opp:"#52d0a8", hi:"#ffa200", oth:"#aaaaaa"}
-    var middle_fill = {switch:"#ffa200", stay:"#aaaaaa"}
+    //keep track of latest geo selected -- avoid callback confusion!
+    var latest_geo = null;
 
     function update_(cbsa){
+
+        if(cbsa == null){
+            cbsa = latest_geo;
+        }
+        else{
+            latest_geo = cbsa;
+        }
+
+        var width;
+        var label_width; //in percent
+        try{
+            var box = left_panel.node().getBoundingClientRect();
+            var width = box.right - box.left;
+        }
+        catch(e){
+            width = 240;
+        }
+
+        var nchar = 35;
+        if(width < 300){
+            label_width = 50;
+            nchar = 20;
+        }
+        if(width < 500){
+            label_width = 40;
+            nchar = 25;
+        }
+        else{
+            label_width = 35;
+            nchar = 30;
+        }
+
+
+
+
         var max_share;
         try{
             var flow = occ_flows[cbsa][sub_ba ? "Sub" : "Total"];
@@ -141,37 +144,34 @@ export default function flow_diagram(container){
             max_share = 0;
         }
 
-        console.log(flow);
+        var zero = label_width;
+        var x_scale = d3.scaleLinear().domain([0, max_share]).range([zero, 95]).nice();
+        var width = function(v){return x_scale(v) - zero;}
 
-        x_left.domain([0, max_share]).nice();
-        x_middle.domain([0, max_share]).nice();
+        add_ticks(g_axis, x_scale);
+        g_axis_line.attr("x1", zero+"%");
+        g_axis_label.attr("x", zero+"%");
 
+        var occ_groups_ = g.selectAll("g.g_bar").data(shares, function(d){return d.occ});
+        occ_groups_.exit().remove()
+        var occ_groups = occ_groups_.enter().append("g").classed("g_bar",true).merge(occ_groups_);
 
-        add_ticks(g_left_anno, x_left);
-        add_ticks(g_middle_anno, x_middle);
-        //to do -- single set of groups?
-
-        //left
-        var left_groups_ = g_left.selectAll("g.g_bar").data(shares, function(d){return d.occ});
-        left_groups_.exit().remove()
-        var left_groups = left_groups_.enter().append("g").classed("g_bar",true).merge(left_groups_);
-
-        left_groups.transition().duration(900).attr("transform", function(d,i){
-            return "translate(0," + (i*(bar_height + bar_pad) + bar_pad) + ")";
+        occ_groups.transition().duration(900).attr("transform", function(d,i){
+            return "translate(0," + (i*(bar_height + bar_pad) + top_pad) + ")";
         })
         
-        var segments = left_groups.selectAll("rect").data(function(d){
+        var segments = occ_groups.selectAll("rect").data(function(d){
             return [{id:"opp", 
                      val:d.opp, 
-                     x:zero_left+"%", 
-                     width:width_left(d.opp)+"%",
-                     fill:left_fill.opp
+                     x:zero+"%", 
+                     width:width(d.opp)+"%",
+                     fill:fill.opp
                     },
                     {id:"oth", 
                      val:d.oth, 
-                     x:(zero_left + width_left(d.opp))+"%", 
-                     width:width_left(d.oth)+"%",
-                     fill:left_fill.oth
+                     x:(zero + width(d.opp))+"%", 
+                     width:width(d.oth)+"%",
+                     fill:fill.oth
                     }
                 ]
         });
@@ -181,7 +181,7 @@ export default function flow_diagram(container){
                 .attr("height", bar_height)
                 .attr("y","0")
                 .attr("fill", function(d){return d.fill})
-                .attr("y", 8)
+                .attr("y", 0)
                 .transition()
                 .duration(1200)
                 .delay(0)
@@ -189,104 +189,72 @@ export default function flow_diagram(container){
                 .attr("width", function(d){return d.width})
                 ;
 
-        //middle
-        var middle_groups_ = g_middle.selectAll("g.g_bar").data(shares, function(d){return d.occ});
-        middle_groups_.exit().remove()
-        var middle_groups = middle_groups_.enter().append("g").classed("g_bar",true).merge(middle_groups_).style("cursor","pointer");
-
-        middle_groups.transition().duration(900).attr("transform", function(d,i){
-            return "translate(0," + (i*(bar_height + bar_pad) + bar_pad) + ")";
-        })
-        
-        var segments2_ = middle_groups.selectAll("rect").data(function(d){
-            
-            var occ = d.occ + "";
-            var f = flow[occ].filter(function(o){return (o.occ+"") == occ})[0];
-            var sh = f.opp + f.oth;
-            var tot = d.opp + d.oth;
-            var leave = (1-sh)*tot;
-            var stay = sh*tot;
-
-            return [{id:"switch", 
-                     val:leave, 
-                     x:zero_middle+"%", 
-                     width:width_middle(leave)+"%",
-                     fill:middle_fill.switch,
-                     occ:occ
-                    },
-                    {id:"stay", 
-                     val:stay, 
-                     x:zero_middle + width_middle(leave)+"%", 
-                     width:width_middle(stay)+"%",
-                     fill:middle_fill.stay,
-                     occ:occ
-                    }
-                ]
-        });
-
-        segments2_.exit().remove();
-        var segments2 = segments2_.enter().append("rect").merge(segments2_)
-                .attr("height", bar_height)
-                .attr("y","0")
-                .attr("fill", function(d){return d.fill})
-                .attr("y", 8)
-        
-                segments2.transition()
-                .duration(1200)
-                .delay(0)
-                .attr("x", function(d){return d.x})
-                .attr("width", function(d){return d.width})
-                ;
-
-        var dividers = middle_groups.selectAll("line").data([1]);
-        dividers.enter().append("line").merge(dividers).attr("x1",zero_left+"%").attr("x2", (100) + "%")
-            .attr("y1", bar_height+bar_pad).attr("y2", bar_height+bar_pad).attr("stroke","#dddddd").style("shape-rendering","crispEdges");
-            ;
-
         //labels
-        var labels = middle_groups.selectAll("text").data(function(d){return [occ_names[d.occ]]});
-        labels.enter().append("text").merge(labels).attr("x",zero_left+"%").attr("y", bar_height+6)
-            .attr("text-anchor","start").text(function(d){return d}).style("font-size","14px").style("font-weight","bold")
-            .attr("dy",text_height)
-            ;
+        var labels_ = occ_groups.selectAll("text").data(function(d){return [{name: occ_names[d.occ], occ:d.occ}]});
+        var labels = labels_.enter().append("text").merge(labels_).attr("x",zero+"%").attr("y", 0)
+            .attr("text-anchor","end")
+            .attr("dx","-4")
+            .text(function(d){
+                var txt = d.name.replace(/\s*Occupations\s*$/i, "");
+                return labeler(txt, nchar)
+            })
+            .style("font-size","14px").attr("dy", bar_height-4);
 
-        middle_groups.on("mousedown", function(d){
+        svg_right.style("display", "none");
+        call_to_action.style("display","block");
+        g_right.selectAll("g").remove(); 
+        right_header_title.text("").style("visibility","hidden"); 
+
+        occ_groups.on("mousedown", function(d){
+
+            svg_right.style("display", null);
+            call_to_action.style("display","none");
+
             //right
             var this_occ = d.occ;
 
-            segments2.attr("stroke",function(d){
-                return d.occ == this_occ ? "#111111" : null;
+            labels.style("font-weight",function(d){
+                return d.occ == this_occ ? "bold" : "normal";
             })
 
-            var these_shares = flow[d.occ];
+            var these_shares = flow[d.occ].slice(0).sort(function(a,b){
+                return d3.descending(a.opp+a.oth, b.opp+b.oth);
+            });
+
+            max_share = d3.max(these_shares, function(d){return d.opp + d.oth});
+            var x_scale = d3.scaleLinear().domain([0, max_share]).range([zero, 95]).nice();
+            var width = function(v){return x_scale(v) - zero;}
+            g_right_axis_line.attr("x1", zero+"%");
+            g_right_axis_label.attr("x", zero+"%");
+            add_ticks(g_right_axis, x_scale);
 
             var groups_ = g_right.selectAll("g.g_bar").data(these_shares, function(d){return d.occ});
             groups_.exit().remove()
             var groups = groups_.enter().append("g").classed("g_bar",true).merge(groups_);
 
             groups.transition().duration(900).attr("transform", function(d,i){
-                return "translate(0," + (i*(bar_height + bar_pad) + bar_pad) + ")";
+                return "translate(0," + (i*(bar_height + bar_pad) + top_pad) + ")";
             })
             
-            var segments = groups.selectAll("rect").data(function(d){
+            var seg = groups.selectAll("rect").data(function(d){
                 
                 var occ = d.occ + "";
 
                 return [{id:"share", 
                         val:null, 
-                        x:zero_right+"%", 
-                        width:width_right(d.opp + d.oth)+"%",
+                        x:zero+"%", 
+                        width:width(d.opp + d.oth)+"%",
                         fill:"#777777"
                         }
                     ]
             });
 
-            segments.exit().remove();
-            segments.enter().append("rect").merge(segments)
+            seg.exit().remove();
+            seg.enter().append("rect").merge(seg)
                     .attr("height", bar_height)
                     .attr("y","0")
                     .attr("fill", function(d){return d.fill})
-                    .attr("y", 8)
+                    .attr("y", 0)
                     .transition()
                     .duration(1200)
                     .delay(0)
@@ -294,28 +262,58 @@ export default function flow_diagram(container){
                     .attr("width", function(d){return d.width})
                     ;
 
+                    //labels
+            var labels_ = groups.selectAll("text").data(function(d){return [{name: occ_names[d.occ], occ:d.occ}]});
+            labels_.enter().append("text").merge(labels_).attr("x",zero+"%").attr("y", 0)
+                .attr("text-anchor","end")
+                .attr("dx","-4")
+                .text(function(d){
+                    var txt = d.name.replace(/\s*Occupations\s*$/i, "");
+                    return labeler(txt, nchar)
+                })
+                .style("font-size","14px")
+                .attr("dy", bar_height-4)
+                .style("font-weight",function(d){
+                    return d.occ == this_occ ? "bold" : "normal";
+                });
+
+            g_right_axis_label.text("Share of " + labeler(occ_names[this_occ].replace(/\s*Occupations*\s$/i, ""), 40));
+            right_header_title.text("Over a ten-year period, this where job-holders in " + 
+                                    occ_names[this_occ].toLowerCase() + 
+                                    " ended up").style("visibility","visible"); 
+            
         })
 
 
     }
 
+    function labeler(txt, nchars){
+        //keep first word
+        var first_word = txt.replace(/\s.*$/, "");
+        var remaining = txt.replace(/^[^\s]*\s/, " ");
+        
+        var n = remaining.length;
+        var l = first_word.length;
+        
+        while(l < nchars && l < txt.length){
+            first_word = first_word + txt.substring(l, l+1);
+            l++;
+        }
 
-    return update_;
+        if(first_word != txt){
+            first_word = first_word + "...";
+        }
 
-    //update function called by fetch_and_update
-    function update(d){
-        var flow;
- 
+        return first_word;
     }
 
 
     ///CACHING AND DATA RETRIEVAL BELOW
 
     //data cache
-        var cache = {}
+    var cache = {}
 
-    //keep track of latest geo selected -- avoid callback confusion!
-        var latest_geo = null;
+
 
     //fetch, then update
     function fetch_and_update(geo){
@@ -342,5 +340,12 @@ export default function flow_diagram(container){
 
     }
 
-    return fetch_and_update;
+    window.addEventListener("resize", function(){
+        update_();
+    })
+
+    return update_;
+
+
+    //return fetch_and_update;
 }
