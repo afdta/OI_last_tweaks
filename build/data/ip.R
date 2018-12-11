@@ -34,7 +34,7 @@ ind0 <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/dat
 ind <- ind0 %>% mutate(hi=hi_good_share + hi_promising_share) %>% 
                 select(cbsa=cbsa_code, naics, ind=industry, g=good_share, p=promising_share, hi, o=other_share, u=undefined, l=level)
 
-ind2 <- ind %>% filter(l==2 | l==1)
+ind2 <- ind %>% filter(l==2 | l==1, is.na(metdiv_code))
 
 #duplicates?
 counts <- ind2 %>% group_by(cbsa) %>% summarise(n=n())
@@ -53,7 +53,7 @@ writeLines(c("var industry_data = ", indjson, ";",
 
 
 flows0 <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/flat_files/flowsedu_2d.csv") %>% mutate(educ=ifelse(educ=="All sub-baccalaureate levels", "Sub", educ)) %>% group_by(cbsa, educ, occ2_a) 
-unique(flows0$educ)
+counts <- flows0 %>% group_by(cbsa) %>% summarise(n=n())
 
 #occupational shares of total
 shares_ <- flows0 %>% group_by(cbsa, educ, occ2_a) %>% summarise(opp_pop=sum(opportunity_pop), oth_pop=sum(other_pop)) %>% 

@@ -18,25 +18,21 @@ export default function opportunity_industries(container, scope){
     var title = header.append("p").classed("mi-title2",true);
 
     //bars root
-    var bar_wrap_ = wrap.append("div").classed("c-fix",true).style("max-width","900px").style("margin","0px");
-    bar_wrap_.append("p").html("Option 1: Stacked bars. Currently sorted by good jobs. Could add ability to sort. Bars may not sum to 100% (add note or complete bars with 'undefined segment'; annotate with values)")
+    var bar_wrap_ = wrap.append("div").classed("c-fix",true).style("margin","0px");
         
-    bar_wrap_.append("p").style("color","#ffaaaa").html('To do: (1) revise color palette so it has enough contrast for 508 compliance; (2) annotate with values and/or add x-axes; (3) insert concise language defining these terms; (4) refine layout');
+    bar_wrap_.append("p").style("color","#ffaaaa").html('To do: (1) revise color palette;<br />(2) annotate with values and/or add x-axes; <br/>(3) insert concise language defining these terms; <br />(4) make bars sortable?; <br/>(5) make layout responsive; <br />(6) Note that bars may not sum to 100% (pad with undefined values?); <br />(7) Consider not stacking to 100% or providing a toggle that stacks to percentage of total jobs. Some industries are quite small (e.g. mining)');
     
-
-
-    var bar_wrap = bar_wrap_.append("div").style("width","600px").style("border-top","1px solid #aaaaaa").style("margin","0px auto").style("float","left");
-
-    bar_wrap_.append("p").html('Percentage of jobs in each<br />industry that are<br />' +
-                                '<span class="key-swatch good-jobs">Good jobs</span><br />' + 
-                                '<span class="key-swatch promising-jobs">Promising jobs</span><br />' +
-                                '<span class="key-swatch hi-jobs">High-skill jobs</span><br />'+
+    bar_wrap_.append("p").html('Percentage of jobs in each industry that are ' +
+                                '<span class="key-swatch good-jobs">Good jobs</span> ' + 
+                                '<span class="key-swatch promising-jobs">Promising jobs</span> ' +
+                                '<span class="key-swatch hi-jobs">High-skill jobs</span> '+
                                 '<span class="key-swatch other-jobs">Other jobs</span>')
                                 .style("font-weight","bold")
-                                .style("border","1px solid #aaaaaa")
                                 .style("margin","0px 15px")
                                 .style("padding","15px")
-                                .style("float","left");
+                                .style("text-align","center");
+
+    var bar_wrap = bar_wrap_.append("div").style("width","100%").style("border-top","1px solid #aaaaaa").style("margin","0px auto");
 
 
     var svg = bar_wrap.append("svg").attr("width","100%").attr("height","500px");
@@ -45,7 +41,7 @@ export default function opportunity_industries(container, scope){
     var g_bars = svg.append("g");
     var g_labels = svg.append("g");
 
-    var x = d3.scaleLinear().domain([0,1]).range([0,100]);
+    var x = d3.scaleLinear().domain([0,1]).range([30,90]);
 
     var width = function(v){
         if(v==null){
@@ -75,7 +71,8 @@ export default function opportunity_industries(container, scope){
     }
 
     var bar_height = 15;
-    var bar_pad = 25;
+    var bar_pad = 10;
+    var top_pad = 10;
 
     //update function to be passed to metro select
     function update(cbsa){
@@ -94,11 +91,17 @@ export default function opportunity_industries(container, scope){
         var igroups = igroups_.enter().append("g").merge(igroups_);
 
         igroups.transition().duration(1000).attr("transform", function(d,i){
-            return "translate(0," + (i*(bar_height+bar_pad)+bar_pad) + ")"
+            return "translate(0," + (i*(bar_height+bar_pad)+top_pad) + ")"
         })
 
         var segment_labels = igroups.selectAll("text").data(function(d){return [d.industry]});
-        segment_labels.enter().append("text").merge(segment_labels).text(function(d){return d}).attr("dy","-3");
+        segment_labels.enter().append("text").merge(segment_labels)
+                                .text(function(d){return labeler(d,35)})
+                                .attr("dy",bar_height-3)
+                                .attr("x", x(0)+"%")
+                                .attr("dx",-4)
+                                .attr("text-anchor","end");
+
         var segments = igroups.selectAll("rect").data(function(d){return d.segments}, function(d){return d.label})
 
         segments.exit().remove();
@@ -116,5 +119,27 @@ export default function opportunity_industries(container, scope){
         svg.attr("height", ((data.length*(bar_height+bar_pad))+(2*bar_pad))+"px" );
     }
 
+    function labeler(txt, nchars){
+        //keep first word
+        var first_word = txt.replace(/\s.*$/, "");
+        var remaining = txt.replace(/^[^\s]*\s/, " ");
+        
+        var n = remaining.length;
+        var l = first_word.length;
+        
+        while(l < nchars && l < txt.length){
+            first_word = first_word + txt.substring(l, l+1);
+            l++;
+        }
+    
+        if(first_word != txt){
+            first_word = first_word + "...";
+        }
+    
+        return first_word;
+    }
+
+
     return update;    
 }
+

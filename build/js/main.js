@@ -40,6 +40,7 @@ function main(){
     //add containers for select module
     var flow_select = document.getElementById("occupation-flows-select");
     var industry_select = document.getElementById("opportunity-industries-select");
+    var metro_shares_select = document.getElementById("metro-shares-select");
     
     // wire up selects differently? get update functions then just add them to callbacks later on
     // update_flow gets update_industries_ in callback...
@@ -50,8 +51,10 @@ function main(){
     var update_industries_ = opportunity_industries(industries_node, scope);
     var update_industries = select_factory(industry_select, update_industries_);
 
-    metros_chart(metros_node);
+    var update_metros_ = metros_chart(metros_node);
+    var update_metros = select_factory(metro_shares_select, update_metros_);
 
+    
 
 
 
@@ -63,6 +66,7 @@ function main(){
       setTimeout(function(){
         update_flow(scope.cbsa);
         update_industries(scope.cbsa);
+        update_metros(scope.cbsa);
       }, 0);
     }
 

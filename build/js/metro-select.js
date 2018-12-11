@@ -50,12 +50,12 @@ export default function metro_select(cbsas){
             update_(v);
             
             //update all others
-            var i = -1;
-            while(++i < queue.length){
-                if(queue[i].id != id){
-                    queue[i].fn(v);
-                }
-            }
+            //var i = -1;
+            //while(++i < queue.length){
+            //    if(queue[i].id != id){
+            //        queue[i].fn(v);
+            //    }
+            // }
         })
         
         queue.push({id:id, fn:update});
