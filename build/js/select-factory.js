@@ -65,7 +65,7 @@ function occ_select(container, callback){
             occs.push({code:o, name:occ_names[o]})
         }
     }
-    add_select(container, occs, callback, "Select an occupation starting point");
+    add_select(container, occs, callback, "Select a start occupation");
 }
 
 function edu_select(container, callback){
