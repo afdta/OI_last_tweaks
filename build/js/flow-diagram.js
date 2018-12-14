@@ -35,7 +35,7 @@ export default function flow_diagram(container, scope){
     var edu_title0 = left_header.append("p").html("Share of all metro area workers ").style("margin","5px 0px").style("font-weight","bold").append("span");
     left_header.append("p").html("By occupation");
     left_header.append("p").html('<span style="margin-right:12px;" class="key-swatch promising-jobs">Good and promising jobs</span>' + 
-                                 '<span class="key-swatch other-jobs">All other jobs</span>');
+                                 '<span class="key-swatch other-jobs">Other jobs</span>');
 
     var right_header_title = right_header.append("p").text("").style("margin","5px 0px").style("font-weight","bold");
     right_header.append("p").html("By the occupations they switched to");
@@ -314,7 +314,7 @@ export default function flow_diagram(container, scope){
 
             example = "Example: " + 
                     (Math.round(popped.opp * 1000)/10) + 
-                    "% switched to good/promising " + 
+                    "% switched to good " + 
                     occ_names[popped.occ].toLowerCase() + 
                     " jobs";
         }

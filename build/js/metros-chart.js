@@ -38,7 +38,8 @@ export default function metros_chart(container, scope){
             return {name: cbsa.name, cbsa:cbsa.code+"", val:obs[cat], cat:cat}
         });
         all.sort(function(a,b){return d3.ascending(a.val, b.val)});
-        var max = d3.max(all, function(d){return d.val});
+        //max, rounded up to nearest 10%
+        var max = Math.ceil(d3.max(all, function(d){return d.val}) * 10)/10;
         return {name: segment_labels[cat], cat:cat, obs: all, Ymax: Y(max), max:max };
     });
 
