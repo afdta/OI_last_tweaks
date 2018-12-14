@@ -12,11 +12,6 @@ export default function metros_chart(container, scope){
         lookup[d.code] = d.name;
     });
 
-   // var header = wrap.append("div").classed("c-fix",true).style("margin","0px 0px 15px 0px").style("border-bottom","1px solid #aaaaaa");
-   // var map_wrap = header.append("div").style("float","left");
-   // var update_map = small_map(map_wrap.node());
-   // var title = header.append("p").classed("mi-title2",true).text("Metro area name");
-
     var segment_labels = {g:"Good jobs held by workers without college degrees", 
                           p:"Promising jobs held by workers without college degrees", 
                           hi:"Good and promising jobs held by workers with a college degree", 
@@ -31,14 +26,11 @@ export default function metros_chart(container, scope){
     var width2 = width/2;
     var Xmax = (width*100) - width;
     var X = d3.scaleLinear().domain([0,99]).range([axis_width, Xmax]);
-    //var Y = d3.scaleLinear().domain([0,d3.max(data, function(d){return d[cat]})]).range([ymin,ymax]);
     var Y = d3.scaleLinear().domain([0,0.8]).range([Ymin,Ymax]);
     var tick_vals = Y.ticks(6);
 
     var height = function(v){return Ymin - Y(v)}
     
-    
-
     //data grouped by category, then sorted by value
     var metros_data = (["p", "g", "hi", "o"]).map(function(cat){
         var all = cbsas.map(function(cbsa){
@@ -160,16 +152,12 @@ export default function metros_chart(container, scope){
         .style("visibility", function(d){return d.cbsa == c ? "visible" : "hidden"})
         .transition().duration(dur).style("opacity",1)
         ;
-
-        
     }
 
     var pinned_cbsa = "";
 
     function update(cbsa){
         resize();
-        //update_map(cbsa);
-        //title.text(lookup[cbsa]);
         highlight(cbsa, 0);
         pinned_cbsa = cbsa;
     }

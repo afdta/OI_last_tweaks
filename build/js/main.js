@@ -11,7 +11,7 @@ function main(){
 
   //local
   dir.local("./");
-  dir.add("data", "data");
+  //dir.add("data", "data");
   //dir.add("dirAlias", "path/to/dir");
 
 
@@ -30,38 +30,14 @@ function main(){
     width: 900
   }
 
-  //var select_factory = metro_select(cbsas);
+
 
   //browser degradation
   if(compat.browser()){
 
-    //add containers for select module
-            
-    // wire up selects differently? get update functions then just add them to callbacks later on
-    // update_flow gets update_industries_ in callback...
-
     var update_flow = flow_diagram(flow_node, scope);
     var update_industries  = opportunity_industries(industries_node, scope);
     var update_metros = metros_chart(metros_node, scope);
-
-    //var update_flow = select_factory(flow_select, update_flow_);
-    //var update_industries = select_factory(industry_select, update_industries_);
-    //var update_metros = select_factory(metro_shares_select, update_metros_);
-
-    
-    //add cbsa selection controls to each panel
-    //function update(cbsa){
-    //  if(arguments.length > 0){
-    //    scope.cbsa = cbsa;
-    //  }
-    //  setTimeout(function(){
-    //    update_flow(scope.cbsa);
-    //    update_industries(scope.cbsa);
-    //    update_metros(scope.cbsa);
-    //  }, 0);
-    // }
-
-    //update();
 
   }
   else{
