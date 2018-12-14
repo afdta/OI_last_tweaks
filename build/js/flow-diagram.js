@@ -272,8 +272,6 @@ export default function flow_diagram(container, scope){
             these_shares = [];
             xscale = d3.scaleLinear();
         }
-
-        console.log(these_shares);
         
         var yfn = function(oc){
             var y0 = ordinalscale(oc)*(bar_height + bar_pad) + top_pad;

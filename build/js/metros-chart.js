@@ -237,8 +237,7 @@ export default function metros_chart(container, scope){
     setTimeout(function(){
         update(scope.cbsa);
 
-        var metro_shares_select = document.getElementById("metro-shares-select");
-        metro_select(metro_shares_select, update);
+        metro_select(document.getElementById("metro-shares-select"), update);
 
         window.addEventListener("resize", resize);
     }, 0) 
