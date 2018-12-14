@@ -23,7 +23,7 @@ export default function small_map(container){
     //update map, run callback with this.title()
     function update(cbsa){
         //update map
-        cbsa_layer.attr({r:function(d){return d == cbsa ? "4" : "0"}, fill:palette.primary.red, stroke:"#ffffff"});
+        cbsa_layer.attr({r:function(d){return d == cbsa ? "4" : "0"}, fill:"#ffa200", stroke:"#555555"});
         highlight_map.print(110);
     }
     

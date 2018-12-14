@@ -1,4 +1,12 @@
 //cbsas should look like: [{code:10420, name:"Akron ..."}, {code:___, name:___}, ...]
+function add_select(container, options, callback){
+
+}
+
+function metro_select(container, callback){
+
+}
+
 export default function metro_select(cbsas){
 
     var num = -1;
