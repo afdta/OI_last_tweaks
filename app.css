@@ -211,6 +211,12 @@
     font-weight:bold;
 }
 
+.metro-interactive ul{
+	list-style-type:disc;
+	padding-left:2rem;
+}
+
+
 /*select*/
 .metro-interactive select{
     font-size:16px;
