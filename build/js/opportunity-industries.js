@@ -77,7 +77,6 @@ export default function opportunity_industries(container, scope){
     var bar_pad = 10;
     var top_pad = 10;
 
-    //update function to be passed to metro select
     var current_cbsa = null;
     function update(cbsa){
 
@@ -182,8 +181,7 @@ export default function opportunity_industries(container, scope){
     setTimeout(function(){
         update(scope.cbsa);
 
-        var industry_select = document.getElementById("opportunity-industries-select");
-        metro_select(industry_select, update);
+        metro_select(document.getElementById("opportunity-industries-select"), update);
 
         window.addEventListener("resize", function(){
             if(current_cbsa != null){

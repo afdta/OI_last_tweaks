@@ -25,26 +25,21 @@ dir_download <- "https://app.box.com/v/BMPPOI-MetroJobShares"
 #other – Share of employed in starting occ that do not have and will not have a good job at start or end of pathway
 #weight – Raw person weight (number of employed in that starting occ meeting personal descriptors as implied by ACS data) – ignore this
 
-occs <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/met_opptyocc2017j.csv") %>% 
-        filter(level==2) %>% mutate(occ=substr(sub("-","",soc_code), 1, 2))
-
-occs2 <- occs %>% group_by(cbsa_code, CBSA_Title, metdiv_title) %>% mutate(shtot=total/sum(total))
-
-occs2 %>% summarise(shtotal = sum(shtot))
+###OPPORTUNITY INDUSTRY PANEL (AND METRO SHARES PANEL)
 
 ind0 <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/met_opptyind2017s.csv") 
 
 ind <- ind0 %>% mutate(hi=hi_good_share + hi_promising_share) %>% filter(is.na(metdiv_code)) %>%
                 select(cbsa=cbsa_code, naics, ind=industry, g=good_share, p=promising_share, hi, o=other_share, u=undefined, l=level)
 
-indtu <- ind %>% mutate(un=1-(g+p+hi+o)) %>% mutate(diff = u - un)
+#indtu <- ind %>% mutate(un=1-(g+p+hi+o)) %>% mutate(diff = u - un)
 
 ind2 <- ind %>% filter(l==2 | l==1)
 
-#duplicates?
+#duplicates, max val?
 counts <- ind2 %>% group_by(cbsa) %>% summarise(n=n())
-maxes <- ind2 %>% filter(is.na(naics)) %>% summarise(max=max(g, p, hi, o, u))
-naics <- unique(ind2[c("naics")])
+ind2 %>% filter(is.na(naics)) %>% summarise(max=max(g, p, hi, o, u))
+unique(ind2[c("naics")])
 
 #indkeys <- ind2 %>% select(naics, ind) %>% unique() %>% spread(naics, ind) %>% unbox()
 indkeys <- read_xlsx("/home/alec/Projects/Brookings/opportunity-industries/build/data/Shortened titles.xlsx", sheet="Industries") %>%
@@ -60,14 +55,18 @@ writeLines(c("var industry_data = ", indjson, ";",
              "var cbsas = ", toJSON(metros), ";",
              "export {industry_data, industry_names, cbsas};"), con = "/home/alec/Projects/Brookings/opportunity-industries/build/js/industry-data.js")
 
+
+### OCCUPATION FLOWS
+
 educ_short <- tibble(educ_long=c("All sub-baccalaureate levels", "Baccalaureate degree or higher", "Total"), educ=c("Sub", "BA", "Tot"))
 
 flows_in <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/flowsedu_2d.csv") %>% 
             rename(educ_long=educ) %>% 
             full_join(educ_short, ., by="educ_long") 
 
-flows0 <- flows_in %>% filter(educ != "Tot")
+flows0 <- flows_in %>% filter(educ != "Tot", is.na(metdiv_code))
 
+#4 metros have fewer obs than the others
 counts <- flows0 %>% group_by(cbsa) %>% summarise(n=n())
 
 #occupational shares of total
@@ -111,3 +110,11 @@ writeLines(c("var occ_flows = ", json_flows, ";",
              "var occ_names = ", toJSON(occ_names), ";",
              "export {occ_flows, occ_shares, occ_names};"), con = "/home/alec/Projects/Brookings/opportunity-industries/build/js/occupation-data.js")
 
+
+#UNUSED
+occs <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build/data/met_opptyocc2017j.csv") %>% 
+  filter(level==2) %>% mutate(occ=substr(sub("-","",soc_code), 1, 2))
+
+occs2 <- occs %>% group_by(cbsa_code, CBSA_Title, metdiv_title) %>% mutate(shtot=total/sum(total))
+
+occs2 %>% summarise(shtotal = sum(shtot))
