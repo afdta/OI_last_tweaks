@@ -88,7 +88,8 @@ counts <- flows0 %>% group_by(educ, occ2_a) %>% summarise(n=n())
 
 #occupational shares of total
 shares_ <- flows0 %>% group_by(cbsa, educ, occ2_a) %>% summarise(opp_pop=sum(opportunity_pop), oth_pop=sum(other_pop), tot_pop=sum(probs_pop)) %>%
-                     mutate(opp=round(opp_pop/sum(opp_pop+oth_pop), digits=3), oth= round(oth_pop/sum(opp_pop+oth_pop), digits=3), sh=tot_pop/sum(tot_pop))
+                     mutate(tot_tot = opp_pop + oth_pop) %>%
+                     mutate(opp=round(opp_pop/sum(tot_tot), digits=3), oth= round(oth_pop/sum(tot_tot), digits=3), sh=tot_pop/sum(tot_pop))
 
 unique(flows_in[c("educ","educ_long")])
 unique(shares_[c("educ")])
