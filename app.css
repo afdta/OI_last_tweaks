@@ -199,16 +199,19 @@
     max-width: 1200px;
     margin-left:auto;
     margin-right:auto;
+    line-height:1.4em;
 }
 
 .metro-interactive p.mi-title2{
     font-size:30px;
     font-weight:bold;
+    line-height:1.4em;
 }
 
 .metro-interactive p.mi-title3{
     font-size:20px;
     font-weight:bold;
+    line-height:1.4em;
 }
 
 .metro-interactive ul{
