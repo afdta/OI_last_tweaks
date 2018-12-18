@@ -168,6 +168,7 @@ export default function flow_diagram(container, scope){
     //keep track of latest geo selected -- avoid callback confusion!
     var latest_geo = null;
     var latest_occ = 11;
+    var latest_occ_g = null;
 
     var middle_spacing = 40;
     var spacing_on_both = 20;
@@ -207,6 +208,7 @@ export default function flow_diagram(container, scope){
         
         try{
             var flow = occ_flows[cbsa][sub_ba];
+            console.log(flow);
             var shares = occ_shares[cbsa][sub_ba].slice(0);
             
             shares.sort(function(a,b){return d3.descending(a.opp, b.opp)})
@@ -214,7 +216,10 @@ export default function flow_diagram(container, scope){
             max_share = d3.max(shares, function(d){return d.opp + d.oth});
             var ordscale = d3.scaleOrdinal()
                              .domain(shares.map(function(d){return d.occ}))
-                             .range(d3.range(0, shares.length));
+                             .range(d3.range(0, shares.length))
+                             .unknown(shares.length);
+                             //For 3 metro areas (CO springs, Deltona, Tulsa), 
+                             //Agriculture appears in destination occs for BA+, but not in starting, this is handled by unknown()
             var xscale = d3.scaleLinear().domain([0, max_share]).range([0,bars_width]).nice();
                              
         }
@@ -227,7 +232,8 @@ export default function flow_diagram(container, scope){
         }
 
         //labels
-        var labels_ = g_labels.selectAll("text").data(shares)
+        var labels_ = g_labels.selectAll("text").data(shares);
+        labels_.exit().remove();
         var labels = labels_.enter().append("text").merge(labels_)
             .attr("x",labels_width)
             .attr("y", function(d){
@@ -242,10 +248,14 @@ export default function flow_diagram(container, scope){
             .style("font-size","14px").attr("dy", bar_height-4);
 
 
-        draw_segments(g, g_axis, shares, xscale, ordscale).on("mousedown", function(d){
-            latest_occ = d.occ;
-            show_flows(flow, ordscale);
-        }).style("cursor","pointer");
+        //draw segments returns occ_group <g> occ_groups
+        //keep reference to the starting occs so they can be highlighted when show flows is called
+        latest_occ_g = draw_segments(g, g_axis, shares, xscale, ordscale)
+                            .on("mousedown", function(d){
+                                latest_occ = d.occ;
+                                show_flows(flow, ordscale);
+                            })
+                            .style("cursor","pointer");
 
         show_flows(flow, ordscale);
 
@@ -271,6 +281,12 @@ export default function flow_diagram(container, scope){
         catch(e){
             these_shares = [];
             xscale = d3.scaleLinear();
+        }
+
+        if(latest_occ_g !== null){
+            latest_occ_g.style("opacity", function(d){
+                return d.occ == latest_occ ? "1" : "0.25";
+            })
         }
         
         var yfn = function(oc){
