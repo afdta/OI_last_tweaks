@@ -5,7 +5,13 @@ import {occ_names} from "./occupation-data.js";
 function add_select(container, opt_data, callback, prompt){
     var wrap = d3.select(container).classed("c-fix",true);
 
-    var select_wrap = wrap.append("div").classed("select-wrap",true);
+    var outer_select_wrap = wrap.append("div").style("float","left").classed("c-fix",true);
+
+    if(arguments.length > 3){
+        outer_select_wrap.append("p").html("<em>" + prompt + "</em>").style("margin","0px 5px 5px 0px").style("font-size","15px");
+    }
+
+    var select_wrap = outer_select_wrap.append("div").classed("select-wrap",true);
 
     var title = wrap.append("p").classed("mi-title2",true)
         .style("margin","0px 0px 0px 0px")
@@ -17,7 +23,9 @@ function add_select(container, opt_data, callback, prompt){
                 .append("path").attr("d", "M0,0 L5,5 L10,0").attr("fill","none").attr("stroke", "#aaaaaa").attr("stroke-width","2px");
 
     var select = select_wrap.append("select");
-    select.append("option").text(prompt).attr("disabled","yes").attr("selected","1").attr("hidden","1");
+    var select_node = select.node();
+
+    //select.append("option").text(prompt).attr("disabled","yes").attr("selected","1").attr("hidden","1");
 
     var options = select.selectAll("option.cbsa-option")
                         .data(opt_data.slice(0).sort(function(a,b){return d3.ascending(a.name, b.name)} ))
@@ -36,26 +44,20 @@ function add_select(container, opt_data, callback, prompt){
 
     //programatically update select value, run update_
     function update(v){
-        select.node().value = v;
+        select_node.value = v;
         update_(v);
     } 
     
     select.on("change", function(){
         var v = this.value + "";
         update_(v);
-        
-        //update all others
-        //var i = -1;
-        //while(++i < queue.length){
-        //    if(queue[i].id != id){
-        //        queue[i].fn(v);
-        //    }
-        // }
-    })
+    });
+
+    return {update: update, refresh:function(v){select_node.value = v}};
 }
 
 function metro_select(container, callback){
-    add_select(container, cbsas, callback, "Select a metropolitan area");
+    return add_select(container, cbsas, callback, "Select a metropolitan area");
 }
 
 function occ_select(container, callback){
@@ -65,12 +67,12 @@ function occ_select(container, callback){
             occs.push({code:o, name:occ_names[o]})
         }
     }
-    add_select(container, occs, callback, "Select a start occupation");
+    return add_select(container, occs, callback, "Select starting occupation");
 }
 
 function edu_select(container, callback){
     var edus = [{code:"Sub", name:"Workers without a college degree"}, {code:"BA", name:"Workers with a college degree"}];
-    add_select(container, edus, callback, "Select worker education level");
+    return add_select(container, edus, callback, "Select worker education level");
 }
 
 var lookup = {};

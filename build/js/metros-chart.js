@@ -157,6 +157,8 @@ export default function metros_chart(container, scope){
 
     var pinned_cbsa = "";
 
+    var update_metro_select = metro_select(document.getElementById("metro-shares-select"), update);
+
     function update(cbsa){
         resize();
         highlight(cbsa, 0);
@@ -175,19 +177,24 @@ export default function metros_chart(container, scope){
         leave_timer = setTimeout(function(){highlight(pinned_cbsa, 0);},250);
     })
 
-    bars.on("touchstart", function(d){
+    function bar_select(d){
         clearTimeout(leave_timer);
         highlight(d.cbsa);
+        pinned_cbsa = d.cbsa;
+        update_metro_select.refresh(d.cbsa);
         d3.event.stopPropagation();
         d3.event.preventDefault();
-    })
+    }
 
-    bars.on("touchend", function(d){
+    bars.on("mousedown", bar_select);
+    bars.on("touchstart", bar_select);
+
+    /*bars.on("touchend", function(d){
         clearTimeout(leave_timer)
         leave_timer = setTimeout(function(){highlight(pinned_cbsa, 0);},500);
         d3.event.stopPropagation();
         d3.event.preventDefault();
-    })
+    })*/
     
     function resize(){
         try{
@@ -238,8 +245,7 @@ export default function metros_chart(container, scope){
     setTimeout(function(){
         update(scope.cbsa);
 
-        metro_select(document.getElementById("metro-shares-select"), update);
-
+        //no real redrawing, just highlighting as requested by user
         window.addEventListener("resize", resize);
     }, 0) 
     

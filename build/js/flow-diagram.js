@@ -59,8 +59,6 @@ export default function flow_diagram(container, scope){
     //g should be above g_right                        
     var g = svg.append("g").attr("transform","translate(" + labels_width + ",0)");
     var g_axis = g.append("g").attr("transform","translate(0," + (svg_height-bot_pad) + ")");
-    
-    var sub_ba = "Sub";
 
     function segment_data_retrieval(d, scale){
         var zero = scale(0);
@@ -165,10 +163,31 @@ export default function flow_diagram(container, scope){
     }
 
 
-    //keep track of latest geo selected -- avoid callback confusion!
+    //keep track of selected parameters
+    var sub_ba = "Sub";
     var latest_geo = null;
-    var latest_occ = 11;
+    var latest_occ = 51;
     var latest_occ_g = null;
+
+    //add controls
+    var flow_select_wrap = document.getElementById("occupation-flows-select");
+
+    var update_metro_select = metro_select(flow_select_wrap, function(cbsa){
+        update(cbsa);
+    })
+
+    var update_edu_select = edu_select(flow_select_wrap, function(edu){
+        if(edu == "Sub" || edu == "BA"){
+            sub_ba = edu;
+        }
+        update();
+    })
+
+    var update_occ_select = occ_select(flow_select_wrap, function(occ){
+        latest_occ = occ;
+        update();
+    })
+
 
     var middle_spacing = 40;
     var spacing_on_both = 20;
@@ -208,7 +227,6 @@ export default function flow_diagram(container, scope){
         
         try{
             var flow = occ_flows[cbsa][sub_ba];
-            console.log(flow);
             var shares = occ_shares[cbsa][sub_ba].slice(0);
             
             shares.sort(function(a,b){return d3.descending(a.opp, b.opp)})
@@ -253,7 +271,8 @@ export default function flow_diagram(container, scope){
         latest_occ_g = draw_segments(g, g_axis, shares, xscale, ordscale)
                             .on("mousedown", function(d){
                                 latest_occ = d.occ;
-                                show_flows(flow, ordscale);
+                                update_occ_select.refresh(d.occ);
+                                update();
                             })
                             .style("cursor","pointer");
 
@@ -285,7 +304,7 @@ export default function flow_diagram(container, scope){
 
         if(latest_occ_g !== null){
             latest_occ_g.style("opacity", function(d){
-                return d.occ == latest_occ ? "1" : "0.25";
+                return d.occ == latest_occ ? "1" : "0.45";
             })
         }
         
@@ -300,7 +319,7 @@ export default function flow_diagram(container, scope){
         ledes.exit().remove();
         ledes.enter().append("line").merge(ledes)
               .attr("x1", labels_width)
-              .attr("x2", labels_width + bars_width + middle_spacing + spacing_on_both - 7)
+              .attr("x2", labels_width + bars_width + middle_spacing + spacing_on_both - 9)
               .attr("stroke", function(d){
                   return d.occ == latest_occ ? "#555555" : "#dddddd";
               })
@@ -315,6 +334,25 @@ export default function flow_diagram(container, scope){
             })
             .style("shape-rendering","crispEdges")
             ;
+
+        var arrows = g_leaders.selectAll("path").data(these_shares);
+        arrows.exit().remove();
+        arrows.enter().append("path").merge(arrows)
+                .attr("d", function(d){
+                    var y1 = yfn(d.occ);
+                    var x1 = labels_width + bars_width + middle_spacing + spacing_on_both - 9;
+                    var x0 = x1 - 7;
+                    var y0 = y1 - 7;
+                    var y2 = y1 + 7;
+                    
+                    return ("M" + x0 + "," + y0 + " L" + x1 + "," + y1 + " L" + x0 + "," + y2);
+                })
+                .attr("fill", "none")
+                .attr("stroke", "#555555")
+                .attr("stroke-width","1.5")
+                .attr("visibility", function(d){
+                    return d.occ == latest_occ ? "visible" : "hidden";
+                });        
 
         right_header_title.html("Share of workers " +
                                 (sub_ba == "Sub" ? "without a college degree" : (sub_ba == "BA" ? "with a college degree" : "")) +
@@ -339,61 +377,13 @@ export default function flow_diagram(container, scope){
 
     }
 
-
-    ///CACHING AND DATA RETRIEVAL BELOW
-
-    //data cache
-    var cache = {}
-
-
-
-    //fetch, then update
-    function fetch_and_update(geo){
-        //record this request as the lates geo
-        latest_geo = geo;
-
-        //1) look in cache for data, if not there 2) fetch, store in cache, then update
-        if(cache.hasOwnProperty(geo)){
-            var data = cache[geo];
-            //synchronous update
-            update(data);
-        }
-        else{
-            var url = dir.url("data", "msp.json");
-            d3.json(url).then(function(data){
-                //store data in cache
-                cache[geo] = data;
-                //if no subsequent requests have overridden this one, update with this geo and data
-                if(geo == latest_geo){
-                    update(cache[geo]);
-                }
-            });
-        }
-
-    }
-
     //initialize
     setTimeout(function(){
         update(scope.cbsa);
 
-        //add controls
-        var flow_select_wrap = document.getElementById("occupation-flows-select");
-
-        metro_select(flow_select_wrap, function(cbsa){
-            update(cbsa);
-        })
-    
-        edu_select(flow_select_wrap, function(edu){
-            if(edu == "Sub" || edu == "BA"){
-                sub_ba = edu;
-            }
-            update();
-        })
-    
-        occ_select(flow_select_wrap, function(occ){
-            latest_occ = occ;
-            update();
-        })
+        update_occ_select.refresh(latest_occ);
+        update_edu_select.refresh(sub_ba);
+        update_metro_select.refresh(latest_geo);
 
         window.addEventListener("resize", function(){
             update();

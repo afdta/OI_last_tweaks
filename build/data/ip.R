@@ -39,16 +39,29 @@ ind2 <- ind %>% filter(l==2 | l==1)
 #duplicates, max val?
 counts <- ind2 %>% group_by(cbsa) %>% summarise(n=n())
 ind2 %>% filter(is.na(naics)) %>% summarise(max=max(g, p, hi, o, u))
-unique(ind2[c("naics")])
+ind2_codes <- unique(ind2[c("naics", "ind")]) %>% mutate(naics=as.character(naics))
 
-#indkeys <- ind2 %>% select(naics, ind) %>% unique() %>% spread(naics, ind) %>% unbox()
-indkeys <- read_xlsx("/home/alec/Projects/Brookings/opportunity-industries/build/data/Shortened titles.xlsx", sheet="Industries") %>%
-            mutate(naics_ = sub("-.*$", "", Code)) %>% mutate(naics=ifelse(naics_=="92", "90", naics_)) %>% mutate(nchar = nchar(naics)) %>% select(naics, ind=`Short title`) %>% 
+indkeys0 <- read_xlsx("/home/alec/Projects/Brookings/opportunity-industries/build/data/Shortened titles.xlsx", sheet="Industries") %>%
+            mutate(naics_ = sub("-.*$", "", Code)) %>% mutate(naics=ifelse(naics_=="92", "90", naics_)) %>% mutate(nchar = nchar(naics)) 
+
+ind2_codes2 <- inner_join(ind2_codes, indkeys0, by="naics")
+
+indkeys <- indkeys0 %>% select(naics, ind=`Short title`) %>% 
             spread(naics, ind) %>% unbox()
 
 metros <- ind0 %>% select(code=cbsa_code, name=CBSA_Title) %>% unique()
 
 indjson <- toJSON(ind2 %>% select(-ind, -l) %>% as.data.frame() %>% split(.$cbsa) %>% lapply(function(d){return(d %>% select(-cbsa))}), na="null", digits=5, pretty=TRUE)
+
+#check of logic
+alt <- list()
+alt$one <- as.data.frame(ind2 %>% select(-ind, -l))
+alt$two <- split(alt$one, alt$one$cbsa)
+alt$three <- lapply(alt$two, function(d){
+  return(select(d, -cbsa))
+})
+alt$json <- toJSON(alt$three, na="null", digits=5, pretty=TRUE)
+
 
 writeLines(c("var industry_data = ", indjson, ";", 
              "var industry_names = ", toJSON(indkeys), ";",
@@ -66,14 +79,18 @@ flows_in <- read_csv("/home/alec/Projects/Brookings/opportunity-industries/build
 
 flows0 <- flows_in %>% filter(educ != "Tot", is.na(metdiv_code))
 
-#4 metros have fewer obs than the others
+#4 metros have fewer obs than the others -- BA, 3 metros are missing starting occ 45 
+#17820 CO Springs,  #19660 Deltona, and #46140 Tulsa
+#occ 45 == Agriculture -- these missings are handled in code
+
 counts <- flows0 %>% group_by(cbsa) %>% summarise(n=n())
+counts <- flows0 %>% group_by(educ, occ2_a) %>% summarise(n=n())
 
 #occupational shares of total
 shares_ <- flows0 %>% group_by(cbsa, educ, occ2_a) %>% summarise(opp_pop=sum(opportunity_pop), oth_pop=sum(other_pop), tot_pop=sum(probs_pop)) %>%
                      mutate(opp=round(opp_pop/sum(opp_pop+oth_pop), digits=3) , oth= round(oth_pop/sum(opp_pop+oth_pop), digits=3), sh=tot_pop/sum(tot_pop))
 
-unique(flows0[c("educ","educ_long")])
+unique(flows_in[c("educ","educ_long")])
 unique(shares_[c("educ")])
 
 #why 120 metros? why some missing educ levels                     
