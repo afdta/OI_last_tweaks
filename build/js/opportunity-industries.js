@@ -25,9 +25,9 @@ export default function opportunity_industries(container, scope){
     var legend = split.append("div").style("border-right","0px solid #aaaaaa").style("padding-right","10px");
     legend.append("p").html('<strong>Percentage of jobs in each industry that are good, promising, high-skill, or other jobs</strong>');
     
-    legend.append("p").html('<span class="key-swatch promising-jobs">Promising jobs</span><br /><em>Held by workers without college degrees</em>').style("color","#555555") 
-    legend.append("p").html('<span class="key-swatch good-jobs">Good jobs</span><br /><em>Held by workers without college degrees</em>').style("color","#555555");    
-    legend.append("p").html('<span class="key-swatch hi-jobs">High-skill jobs</span><br /><em>Good and promising jobs held by workers with a college degree</em>').style("color","#555555")
+    legend.append("p").html('<span class="key-swatch promising-jobs">Promising jobs</span><br /><em>Held by workers without a bachelor\'s degree</em>').style("color","#555555") 
+    legend.append("p").html('<span class="key-swatch good-jobs">Good jobs</span><br /><em>Held by workers without a bachelor\'s degree</em>').style("color","#555555");    
+    legend.append("p").html('<span class="key-swatch hi-jobs">High-skill jobs</span><br /><em>Good and promising jobs held by workers with a bachelor\'s degree</em>').style("color","#555555")
     legend.append("p").html('<span class="key-swatch other-jobs">Other jobs</span><br /><em>All other jobs</em>').style("color","#555555")
 
 

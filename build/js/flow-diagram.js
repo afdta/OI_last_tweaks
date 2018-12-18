@@ -279,7 +279,7 @@ export default function flow_diagram(container, scope){
         show_flows(flow, ordscale);
 
         metro_title.text(lookup[cbsa]);
-        edu_title0.text(sub_ba == "Sub" ? " without a college degree" : (sub_ba == "BA" ? " with a college degree" : ""));
+        edu_title0.text(sub_ba == "Sub" ? " without a bachelor's degree" : (sub_ba == "BA" ? " with a bachelor's degree" : ""));
 
     }
 
@@ -355,7 +355,7 @@ export default function flow_diagram(container, scope){
                 });        
 
         right_header_title.html("Share of workers " +
-                                (sub_ba == "Sub" ? "without a college degree" : (sub_ba == "BA" ? "with a college degree" : "")) +
+                                (sub_ba == "Sub" ? "without a bachelor's degree" : (sub_ba == "BA" ? "with a bachelor's degree" : "")) +
                                 " that started in " + occ_names[latest_occ].toLowerCase() + " occupations" );
 
         var example = "";

@@ -12,9 +12,9 @@ export default function metros_chart(container, scope){
         lookup[d.code] = d.name;
     });
 
-    var segment_labels = {g:"Good jobs held by workers without college degrees", 
-                          p:"Promising jobs held by workers without college degrees", 
-                          hi:"Good and promising jobs held by workers with a college degree", 
+    var segment_labels = {g:"Good jobs held by workers without a bachelor's degree", 
+                          p:"Promising jobs held by workers without a bachelor's degree", 
+                          hi:"Good and promising jobs held by workers with a bachelor's degree", 
                           o:"Other jobs"}
     var segment_fill = {g:"#394d9c", p:"#52d0a8", hi:"#ffa200", o:"#777777"}
 
