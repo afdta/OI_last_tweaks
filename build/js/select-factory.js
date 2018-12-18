@@ -71,7 +71,7 @@ function occ_select(container, callback){
 }
 
 function edu_select(container, callback){
-    var edus = [{code:"Sub", name:"Workers without a college degree"}, {code:"BA", name:"Workers with a college degree"}];
+    var edus = [{code:"Sub", name:"Workers without a bachelor's degree"}, {code:"BA", name:"Workers with a bachelor's degree"}];
     return add_select(container, edus, callback, "Select worker education level");
 }
 
